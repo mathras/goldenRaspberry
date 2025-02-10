@@ -6,7 +6,7 @@ import { ProducerAwardsDto } from './dto/producer-awards.dto';
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
-  @Get('awards/producers')
+  @Get('producer-awards')
   async getProducerAwards(): Promise<{ min: ProducerAwardsDto[]; max: ProducerAwardsDto[] }> {
     return this.movieService.getProducerAwards();
   }
