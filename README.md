@@ -20,7 +20,7 @@ Este projeto é uma API RESTful desenvolvida com NestJS para processar e analisa
    npm run start
    ```
 
-## 🛠️ Rodando os Testes de Integração
+## Rodando os Testes de Integração
 
 1. Execute os testes:
    ```sh
