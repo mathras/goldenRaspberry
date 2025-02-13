@@ -21,7 +21,6 @@ export class MovieService implements OnModuleInit {
   async loadMoviesFromCSV(): Promise<void> {
     const filePath = path.join(__dirname, '../../movielist.csv');
   
-    // Verifica se o arquivo existe antes de tentar ler
     if (!fs.existsSync(filePath)) {
       console.error(`Erro: O arquivo ${filePath} não foi encontrado.`);
       return;
@@ -44,7 +43,6 @@ export class MovieService implements OnModuleInit {
         })
         .on('end', async () => {
           await this.movieRepository.save(movies);
-          console.log('Filmes importados com sucesso!');
           resolve();
         })
         .on('error', (error) => {
@@ -66,30 +64,29 @@ export class MovieService implements OnModuleInit {
     const producerMap = new Map<string, number[]>();
   
     for (const movie of winners) {
-      const producers = movie.producers.split(',').map((p) => p.trim()); 
+      const producers = movie.producers.split(/,\s*| and /).map((p) => p.trim()); 
       for (const producer of producers) {
         if (!producerMap.has(producer)) {
-            producerMap.set(producer, []); 
-          }
-          producerMap.get(producer)!.push(movie.year);
-          
+          producerMap.set(producer, []);
+        }
+        producerMap.get(producer)?.push(movie.year);
       }
     }
   
     const awardIntervals: ProducerAwardsDto[] = [];
   
     producerMap.forEach((years, producer) => {
-      if (years.length > 1) {
-        years.sort((a, b) => a - b); 
+      years.sort((a, b) => a - b);
   
-        for (let i = 1; i < years.length; i++) {
-          awardIntervals.push({
-            producer,
-            interval: years[i] - years[i - 1],
-            previousWin: years[i - 1],
-            followingWin: years[i],
-          });
-        }
+      for (let i = 1; i < years.length; i++) {
+        const intervalo = years[i] - years[i - 1];
+  
+        awardIntervals.push({
+          producer,
+          interval: intervalo,
+          previousWin: years[i - 1],
+          followingWin: years[i],
+        });
       }
     });
   
@@ -100,13 +97,15 @@ export class MovieService implements OnModuleInit {
     const minInterval = Math.min(...awardIntervals.map((a) => a.interval));
     const maxInterval = Math.max(...awardIntervals.map((a) => a.interval));
   
+    const minAwards = awardIntervals.filter((a) => a.interval === minInterval);
+    const maxAwards = awardIntervals.filter((a) => a.interval === maxInterval);
+  
     return {
-      min: awardIntervals.filter((a) => a.interval === minInterval),
-      max: awardIntervals.filter((a) => a.interval === maxInterval),
+      min: minAwards,
+      max: maxAwards,
     };
   }
   
-
 
 
 

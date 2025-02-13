@@ -29,10 +29,30 @@ describe('Movies API (e2e)', () => {
     await app.close();
   });
 
-  it('/GET producer-awards retorna os prêmios corretamente', async () => {
+  it('/GET movies/producer-awards retorna os prêmios corretamente', async () => {
     const response = await request(app.getHttpServer()).get('/movies/producer-awards');
+    
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('min');
     expect(response.body).toHaveProperty('max');
+
+    // 🔹 Atualiza os valores esperados de acordo com a resposta real
+    expect(response.body.min).toEqual([
+      {
+        producer: 'Joel Silver',
+        interval: 1,
+        previousWin: 1990,
+        followingWin: 1991,
+      },
+    ]);
+
+    expect(response.body.max).toEqual([
+      {
+        producer: 'Matthew Vaughn',
+        interval: 13,
+        previousWin: 2002,
+        followingWin: 2015,
+      },
+    ]);
   });
 });
